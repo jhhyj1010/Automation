@@ -1,0 +1,27 @@
+gpu:
+  - case: default
+    index: 10
+    bin: '/opt/bgpu:v20.22.11.bin'
+    timeout: 10
+  - case: positive_02
+    index: 20
+    bin: '/opt/bgpu:v20.23.1.bin'
+    gpu: true
+    timeout: 20
+  - case: positive_03
+    index: 102
+    bin: '/opt/bgpu:v20.23.12.bin'
+    gpu: true
+    timeout: 30
+  - case: negative_02
+    index: 1
+    bin: '/opt/bgpu:v20.23.4.bin'
+    gpu: false
+    qos: WorstEffort
+    timeout: 30
+  - case: full
+    index: 4
+    bin: '/opt/bgpu:v20.23.5.bin'
+    gpu: true
+    timeout: 30
+

@@ -1,0 +1,1 @@
+{"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#", "contentVersion": "1.0.0.0", "parameters": {"serverVersion": {"value": "4.2"}, "databaseName": {"value": "jesson-Mongo"}, "ipAddressOrRange": "10.0.0.0/12", "exampleArray": {"value": ["value 1", "value 2"]}, "exampleObject": {"value": {"property1": "value1", "property2": "value2"}}}}
