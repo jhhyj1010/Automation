@@ -35,6 +35,14 @@ class Graph:
     #                                   #
     #                                   #
     ##################################### 
+    def remove_vertex(self, value):
+        if value in self.adj_list.keys():
+            for k, v in self.adj_list.items():
+                if value in v:
+                    v.remove(value)
+        
+        del self.adj_list[value]
+        return True
 
 
 

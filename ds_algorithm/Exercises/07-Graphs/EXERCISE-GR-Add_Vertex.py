@@ -12,6 +12,8 @@ class Graph:
     #                                #
     #                                #
     ##################################
+    def add_vertex(self, node: str):
+        self.adj_list[node] = []
 
 
 

@@ -122,12 +122,40 @@ class LinkedList:
             temp = after
   
 
+###
+class LinkedList1:
+    def __init__(self, head, tail):
+        self.head = head
+        self.tail = tail
 
+def cons(head, tail=None):
+    return LinkedList1(head, tail)
+
+def listToString(list):
+    if list is None:
+        return ""
+    if list.tail is None:
+        return str(list.head)
+    return str(list.head) + " " + listToString(list.tail)
+
+def myMap(fn, list):
+    if list is None:
+        return None
+    return cons(fn(list.head), myMap(fn, list.tail))
+
+def myReduce(fn, accm, list):
+    if list is None:
+        return accm
+    return myReduce(fn, fn(accm, list.head), list.tail)
+###
 
 my_linked_list = LinkedList(1)
 my_linked_list.append(2)
 my_linked_list.append(3)
 my_linked_list.append(4)
+
+cons = cons(my_linked_list.head, my_linked_list.tail)
+
 
 print('LL before reverse():')
 my_linked_list.print_list()

@@ -18,6 +18,14 @@ class Graph:
     #                              #
     #                              #
     ################################
+    def add_edge(self, value1, value2):
+        if value1 not in self.adj_list.keys():
+            self.adj_list[value1] = []
+        if value2 not in self.adj_list.keys():
+            self.adj_list[value2] = []
+        self.adj_list[value1].append(value2)
+        self.adj_list[value2].append(value1)
+
 
 
 
