@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI File Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="file"], input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <h1>FastAPI File Upload Test</h1>
+    
+    <h2>1. Basic File Upload</h2>
+    <form id="basicUpload" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file1">Select File:</label>
+            <input type="file" id="file1" name="file" required>
+        </div>
+        <button type="submit">Upload File</button>
+    </form>
+    <div id="basicResult" class="result" style="display: none;"></div>
+    
+    <h2>2. Multiple Files Upload</h2>
+    <form id="multipleUpload" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="files">Select Files:</label>
+            <input type="file" id="files" name="files" multiple required>
+        </div>
+        <button type="submit">Upload Files</button>
+    </form>
+    <div id="multipleResult" class="result" style="display: none;"></div>
+    
+    <h2>3. Upload with Metadata</h2>
+    <form id="metadataUpload" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file2">Select File:</label>
+            <input type="file" id="file2" name="file" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" required>
+        </div>
+        <div class="form-group">
+            <label for="category">Category:</label>
+            <select id="category" name="category">
+                <option value="general">General</option>
+                <option value="documents">Documents</option>
+                <option value="images">Images</option>
+                <option value="videos">Videos</option>
+            </select>
+        </div>
+        <button type="submit">Upload with Metadata</button>
+    </form>
+    <div id="metadataResult" class="result" style="display: none;"></div>
+    
+    <h2>4. Validated Upload</h2>
+    <form id="validatedUpload" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file3">Select File (Images/PDF only):</label>
+            <input type="file" id="file3" name="file" accept="image/*,.pdf" required>
+        </div>
+        <div class="form-group">
+            <label for="maxSize">Max Size (MB):</label>
+            <input type="number" id="maxSize" name="max_size_mb" value="10" min="1" max="100">
+        </div>
+        <button type="submit">Upload with Validation</button>
+    </form>
+    <div id="validatedResult" class="result" style="display: none;"></div>
+    
+    <h2>5. List Uploaded Files</h2>
+    <button onclick="listFiles()">List Files</button>
+    <div id="listResult" class="result" style="display: none;"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        // Basic upload
+        document.getElementById('basicUpload').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            const file = document.getElementById('file1').files[0];
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch(`${API_BASE}/upload/`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                showResult('basicResult', result, response.ok);
+            } catch (error) {
+                showResult('basicResult', {error: error.message}, false);
+            }
+        });
+        
+        // Multiple upload
+        document.getElementById('multipleUpload').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            const files = document.getElementById('files').files;
+            
+            for (let file of files) {
+                formData.append('files', file);
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/upload-multiple/`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                showResult('multipleResult', result, response.ok);
+            } catch (error) {
+                showResult('multipleResult', {error: error.message}, false);
+            }
+        });
+        
+        // Metadata upload
+        document.getElementById('metadataUpload').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            const file = document.getElementById('file2').files[0];
+            const description = document.getElementById('description').value;
+            const category = document.getElementById('category').value;
+            
+            formData.append('file', file);
+            formData.append('description', description);
+            formData.append('category', category);
+            
+            try {
+                const response = await fetch(`${API_BASE}/upload-with-data/`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                showResult('metadataResult', result, response.ok);
+            } catch (error) {
+                showResult('metadataResult', {error: error.message}, false);
+            }
+        });
+        
+        // Validated upload
+        document.getElementById('validatedUpload').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            const file = document.getElementById('file3').files[0];
+            const maxSize = document.getElementById('maxSize').value;
+            
+            formData.append('file', file);
+            formData.append('max_size_mb', maxSize);
+            
+            try {
+                const response = await fetch(`${API_BASE}/upload-validated/`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                showResult('validatedResult', result, response.ok);
+            } catch (error) {
+                showResult('validatedResult', {error: error.message}, false);
+            }
+        });
+        
+        // List files
+        async function listFiles() {
+            try {
+                const response = await fetch(`${API_BASE}/files/`);
+                const result = await response.json();
+                showResult('listResult', result, response.ok);
+            } catch (error) {
+                showResult('listResult', {error: error.message}, false);
+            }
+        }
+        
+        function showResult(elementId, data, success) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${success ? 'success' : 'error'}`;
+            element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+    </script>
+</body>
+</html> 
